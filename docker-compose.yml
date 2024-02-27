@@ -1,0 +1,16 @@
+version: '3.8'
+services:
+  fastapi-bankid:
+    container_name: fastapi-bankid
+    build:
+      context: .
+      dockerfile: DockerFile
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+    
+    command: bash -c "python main.py"
+    environment:
+      - WATCHFILES_FORCE_POLLING=true
+    restart: unless-stopped
