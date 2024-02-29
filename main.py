@@ -1,40 +1,32 @@
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from utils.bankid import get_bankid_client
 from dotenv import load_dotenv
-from fastapi.responses import JSONResponse
+from utils.config import Config
+from routes import auth
 
 load_dotenv()
+
+config = Config("config.yml").config
 
 app = FastAPI()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    app.state.config = config
     app.state.bankid_client = get_bankid_client(test_server=True)
     yield
 
 
 app = FastAPI(lifespan=lifespan)
 
+routes = [
+    auth.router,
+]
 
-@app.get("/same-device")
-async def same_device_authentication(request: Request, response: Response):
-    user_ip = request.client.host
-
-    auth = request.app.state.bankid_client.authenticate(
-        end_user_ip=user_ip,
-        requirement={"tokenStartRequired": False}
-    )
-    
-    return JSONResponse(
-        content={
-            "orderRef": auth["orderRef"],
-            "autoStartToken": auth["autoStartToken"]},
-        status_code=200
-    
-    )
-
+for route in routes:
+    app.include_router(route)
 
 if __name__ == "__main__":
     import uvicorn
