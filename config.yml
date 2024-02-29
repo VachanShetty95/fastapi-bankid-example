@@ -1,0 +1,17 @@
+app:
+  host: "0.0.0.0"
+  port: 8080
+api:
+  title: "FastAPI BankID integration"
+  description: "API for generating secure BankID authentication tokens"
+  version: "0.0.1"
+urls:
+  auth:
+    index: "/auth"
+    this-device: "/same-device"
+    other-device: "/other-device"
+    get-qr-code: "/get-qr-code"
+    collect: "/collect"
+    cancel: "/cancel"
+    personalnumber: "/personalnumber"
+    logout: "/logout"
